@@ -1,0 +1,13 @@
+aws_region                 = "us-east-1"
+environment                = "dev"
+project                    = "agentic-devops"
+vpc_cidr                   = "10.0.0.0/16"
+availability_zones         = ["us-east-1a", "us-east-1b", "us-east-1c"]
+single_nat_gateway         = false
+cluster_endpoint_public    = false
+ecr_repository_names       = ["agentic-devops/application"]
+node_instance_types        = ["t3.medium"]
+node_desired_size          = 3
+node_min_size              = 2
+node_max_size              = 6
+cluster_kubernetes_version = "1.32"

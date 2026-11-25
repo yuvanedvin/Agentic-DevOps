@@ -27,6 +27,9 @@ override.tf.json
 .terraformrc
 terraform.rc
 
+# Terrraform lock files
+.terraform.lock.hcl
+
 # Environment variables and secrets
 .env
 .env.*
