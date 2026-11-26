@@ -63,3 +63,42 @@ The Terraform configuration provisions:
 
 The baseline is intentionally private-first: EKS API public access is disabled by default. Override `cluster_endpoint_public` and
 `cluster_endpoint_public_cidrs` only after defining the approved network boundaries.
+
+## Spring Boot application
+
+The sample service is in `application/`. It exposes `GET /api/hello` and Spring Boot Actuator liveness/readiness endpoints.
+
+Run locally with Java 21 and Maven:
+
+```bash
+cd application
+mvn spring-boot:run
+curl 'http://localhost:8080/api/hello?name=AWS'
+```
+
+Build a container image from the repository root:
+
+```bash
+docker build -t agentic-devops-app:local ./application
+docker run --rm -p 8080:8080 agentic-devops-app:local
+```
+
+For EKS, push the image to the ECR repository created by Terraform, replace the sample image in
+`kubernetes/deployment.yaml` with its ECR URL and tag, then apply the manifests:
+
+```bash
+kubectl apply -f kubernetes/deployment.yaml -f kubernetes/service.yaml
+kubectl port-forward service/agentic-devops-app 8080:80
+```
+
+The service is internal (`ClusterIP`); use port-forwarding for a quick check, or add an ingress/load balancer for external access.
+The deployment includes readiness and liveness probes so Kubernetes only routes traffic to healthy application pods.
+
+### AWS DevOps Agent in this setup
+
+AWS DevOps Agent is an operational and release-readiness assistant, not a component that runs inside the Spring Boot application.
+Connect it to the AWS environment and the team's source repository, CI/CD system, and observability tools. It can use deployment
+context and telemetry (for example, CloudWatch logs, metrics, and alarms) to investigate incidents, correlate failures with releases,
+and recommend mitigations or resilience improvements. Its release-management capabilities can review changes and test them in a
+configured verification environment. The application deployment workflow still needs to be implemented; once configured, GitHub
+Actions can build, publish, and deploy the image while the agent adds analysis and operational support around that workflow.
