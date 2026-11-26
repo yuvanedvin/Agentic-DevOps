@@ -32,6 +32,7 @@ resource "aws_internet_gateway" "this" {
 resource "aws_subnet" "public" {
   count = local.az_count
 
+  # this -> AWS VPC resource name 
   vpc_id                  = aws_vpc.this.id
   availability_zone       = var.availability_zones[count.index]
   cidr_block              = cidrsubnet(var.vpc_cidr, 8, count.index)
